@@ -2,8 +2,8 @@ package ca.polymtl.inf8480.tp1.Dispatcher;
 
 import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import com.sun.tools.javac.util.Assert;
-import javafx.util.Pair;
+import ca.polymtl.inf8480.tp1.shared.Tuple;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,10 +57,10 @@ public class Dispatcher {
 
     private void run() {
         //Get op list from file
-        List<Pair<String, Integer>> opList = readOperationList();
+        List<Tuple<String, Integer>> opList = readOperationList();
 
         //Get list of calculator servers from the NameService server
-        List<Pair<String, Integer>> calculatorServersInfo; //String is serverAddress, Integer is server capacity
+        List<Tuple<String, Integer>> calculatorServersInfo; //String is serverAddress, Integer is server capacity
         try {
             calculatorServersInfo = nameServiceInterfaceStub.getCalculatorServerList(username, password);
 
@@ -81,20 +81,20 @@ public class Dispatcher {
         //TODO: Consolidate all tasks and print final answer
     }
 
-    private List<Pair<String, Integer>> readOperationList() {
+    private List<Tuple<String, Integer>> readOperationList() {
         //Split calculation file in operation lines
         ArrayList<String> operationLines = readCalculationFileLines(new File(calculationFilePath));
 
-        List<Pair<String, Integer>> opList = new ArrayList<>();
+        List<Tuple<String, Integer>> opList = new ArrayList<>();
 
         for (String operationLine : operationLines) {
             //Split operation and number
             String[] operationContent = operationLine.split(" ");
 
-            Assert.check(operationContent.length == 2);
+           // Assert.check(operationContent.length == 2);
 
             //Add to operation list
-            opList.add(new Pair<>(operationContent[0], Integer.parseInt(operationContent[1])));
+            opList.add(new Tuple<>(operationContent[0], Integer.parseInt(operationContent[1])));
         }
 
         return opList;

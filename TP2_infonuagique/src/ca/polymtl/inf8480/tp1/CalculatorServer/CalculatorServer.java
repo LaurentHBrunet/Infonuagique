@@ -2,7 +2,7 @@ package ca.polymtl.inf8480.tp1.CalculatorServer;
 
 import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import javafx.util.Pair;
+import ca.polymtl.inf8480.tp1.shared.Tuple;
 
 import java.rmi.AccessException;
 import java.rmi.ConnectException;
@@ -12,6 +12,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class CalculatorServer implements CalculatorServerInterface {
@@ -79,14 +80,14 @@ public class CalculatorServer implements CalculatorServerInterface {
 
     // Returns -1 if the server is unable to do the task because of lack of resources.
     @Override
-    public int calculateTaskList(List<Pair<String, Integer>> operationList, String username, String password) throws RemoteException {
+    public int calculateTaskList(List<Tuple<String, Integer>> operationList, String username, String password) throws RemoteException {
         if (!confirmResourcesAvailable(operationList.size()) || confirmDispatcherLogin(username, password)) {
             return -1;
         }
 
         int total = 0;
 
-        for (Pair<String, Integer> operation : operationList) {
+        for (Tuple<String, Integer> operation : operationList) {
             if (operation.getKey().equals("pell")) {
                 total += Operations.pell(operation.getValue()) % 5000;
                 total = total % 5000;
