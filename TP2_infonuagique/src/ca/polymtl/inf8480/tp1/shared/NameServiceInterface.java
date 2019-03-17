@@ -1,13 +1,11 @@
 package ca.polymtl.inf8480.tp1.shared;
 
-import javafx.util.Pair;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
 public interface NameServiceInterface extends Remote {
-    List<Pair<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException;
+    List<Tuple<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException;
     boolean authenticateUser(String userName, String password) throws RemoteException;
 
     //TODO: Confirm what needs to be passed here, how to save calculator servers in name service

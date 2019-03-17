@@ -2,6 +2,8 @@ package ca.polymtl.inf8480.tp1.shared;
 
 import java.io.*;
 
+
+
 public class FileData implements Serializable {
 	public String fileName;
 	public String fileContent;

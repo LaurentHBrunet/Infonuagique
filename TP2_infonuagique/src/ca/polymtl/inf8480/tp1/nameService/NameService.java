@@ -1,8 +1,7 @@
-package ca.polymtl.inf8480.tp1.NameService;
+package ca.polymtl.inf8480.tp1.nameService;
 
-import ca.polymtl.inf8480.tp1.CalculatorServer.CalculatorServer;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import javafx.util.Pair;
+import ca.polymtl.inf8480.tp1.shared.Tuple;
 
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -16,7 +15,7 @@ public class NameService implements NameServiceInterface {
 
     private String dispatcherUsername;
     private String dispatcherPassword;
-    private List<Pair<String, Integer>> calculatorServerList = new ArrayList<>();
+    private List<Tuple<String, Integer>> calculatorServerList = new ArrayList<>();
 
     public static void main(String[] args) {
         NameService nameService = new NameService();
@@ -48,7 +47,7 @@ public class NameService implements NameServiceInterface {
     }
 
     @Override
-    public List<Pair<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException {
+    public List<Tuple<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException {
         dispatcherUsername = username;
         dispatcherPassword = password;
         return calculatorServerList;
@@ -65,6 +64,7 @@ public class NameService implements NameServiceInterface {
 
     @Override
     public boolean addCalculatorToNameServer(String serverAddress, Integer serverCapacity) throws RemoteException {
-        return calculatorServerList.add(new Pair<>(serverAddress, serverCapacity));
+        System.out.println("Adding server " + serverAddress + " to name server, Capacity : " + serverCapacity);
+        return calculatorServerList.add(new Tuple<>(serverAddress, serverCapacity));
     }
 }

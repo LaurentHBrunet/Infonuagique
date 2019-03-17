@@ -1,0 +1,639 @@
+Index: src/ca/polymtl/inf8480/tp1/shared/FileData.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.polymtl.inf8480.tp1.shared;\n\nimport java.io.*;\n\npublic class FileData implements Serializable {\n\tpublic String fileName;\n\tpublic String fileContent;\n\t\n\tpublic FileData(File file) {\n\t\tfileName = file.getName();\n\t\tfileContent = readFileContent(file);\n\t}\n\t\n\tprivate String readFileContent(File file) {\n\n\t\tString line;\n\t\tString fileContent = \"\";\n\t\ttry {\n\t\t\t\n\t\t\tBufferedReader fileReader = new BufferedReader(new FileReader(file));\n\t\t\n\t\t\tline = fileReader.readLine();\n\t\t\twhile (line != null) {\n\t\t\t\tfileContent += line + \"\\n\";\n\t\t\t\tline = fileReader.readLine();\n\t\t\t}\n\t\t\t\n\t\t\tfileReader.close();\n\t\t} catch (IOException e) {\n\t\t\t// TODO Auto-generated catch block\n\t\t\te.printStackTrace();\n\t\t}\n\n\t\treturn fileContent;\n\t}\n\n\tpublic File convertToFile(String path) {\n\t\tFile file = new File(path + fileName);\n\n\t\tFileWriter fw;\n\t\ttry {\n\t\t\tfw = new FileWriter(file, true);\n\t\t\tfw.write(fileContent);\n\t\t\tfw.close();\n\t\t} catch (Exception e) {\n\t\t\tSystem.out.println(e.getMessage());\n\t\t}\n\n\t\treturn file;\n\t}\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/shared/FileData.java	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ src/ca/polymtl/inf8480/tp1/shared/FileData.java	(date 1552840462000)
+@@ -2,6 +2,8 @@
+ 
+ import java.io.*;
+ 
++
++
+ public class FileData implements Serializable {
+ 	public String fileName;
+ 	public String fileContent;
+Index: src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.polymtl.inf8480.tp1.shared;\n\nimport javafx.util.Pair;\n\nimport java.rmi.Remote;\nimport java.rmi.RemoteException;\nimport java.util.List;\n\npublic interface NameServiceInterface extends Remote {\n    List<Pair<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException;\n    boolean authenticateUser(String userName, String password) throws RemoteException;\n\n    //TODO: Confirm what needs to be passed here, how to save calculator servers in name service\n    boolean addCalculatorToNameServer(String serverAddress, Integer serverCapcity) throws RemoteException;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java	(date 1552840671000)
+@@ -1,13 +1,11 @@
+ package ca.polymtl.inf8480.tp1.shared;
+ 
+-import javafx.util.Pair;
+-
+ import java.rmi.Remote;
+ import java.rmi.RemoteException;
+ import java.util.List;
+ 
+ public interface NameServiceInterface extends Remote {
+-    List<Pair<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException;
++    List<Tuple<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException;
+     boolean authenticateUser(String userName, String password) throws RemoteException;
+ 
+     //TODO: Confirm what needs to be passed here, how to save calculator servers in name service
+Index: src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.polymtl.inf8480.tp1.shared;\n\nimport javafx.util.Pair;\n\nimport java.rmi.Remote;\nimport java.rmi.RemoteException;\nimport java.util.List;\n\npublic interface CalculatorServerInterface extends Remote {\n    int calculateTaskList(List<Pair<String, Integer>> operationList, String username, String password) throws RemoteException;\n    int getCalculatorCapacity();\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java	(date 1552840891000)
+@@ -1,12 +1,11 @@
+ package ca.polymtl.inf8480.tp1.shared;
+ 
+-import javafx.util.Pair;
+ 
+ import java.rmi.Remote;
+ import java.rmi.RemoteException;
+ import java.util.List;
+ 
+ public interface CalculatorServerInterface extends Remote {
+-    int calculateTaskList(List<Pair<String, Integer>> operationList, String username, String password) throws RemoteException;
++    int calculateTaskList(List<Tuple<String, Integer>> operationList, String username, String password) throws RemoteException;
+     int getCalculatorCapacity();
+ }
+Index: src/ca/polymtl/inf8480/tp1/NameService/NameService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.polymtl.inf8480.tp1.NameService;\n\nimport ca.polymtl.inf8480.tp1.CalculatorServer.CalculatorServer;\nimport ca.polymtl.inf8480.tp1.shared.NameServiceInterface;\nimport javafx.util.Pair;\n\nimport java.rmi.ConnectException;\nimport java.rmi.RemoteException;\nimport java.rmi.registry.LocateRegistry;\nimport java.rmi.registry.Registry;\nimport java.rmi.server.UnicastRemoteObject;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class NameService implements NameServiceInterface {\n\n    private String dispatcherUsername;\n    private String dispatcherPassword;\n    private List<Pair<String, Integer>> calculatorServerList = new ArrayList<>();\n\n    public static void main(String[] args) {\n        NameService nameService = new NameService();\n        nameService.run();\n    }\n\n    private void run() {\n        if (System.getSecurityManager() == null) {\n            System.setSecurityManager(new SecurityManager());\n        }\n\n        try {\n            NameServiceInterface stub = (NameServiceInterface) UnicastRemoteObject\n                    .exportObject(this, 0);\n\n            Registry registry = LocateRegistry.getRegistry();\n            registry.rebind(\"nameServer\", stub);\n\n            System.out.println(\"Server ready.\");\n\n        } catch (ConnectException e) {\n            System.err\n                    .println(\"Impossible de se connecter au registre RMI. Est-ce que rmiregistry est lancé ?\");\n            System.err.println();\n            System.err.println(\"Erreur: \" + e.getMessage());\n        } catch (Exception e) {\n            System.err.println(\"Erreur: \" + e.getMessage());\n        }\n    }\n\n    @Override\n    public List<Pair<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException {\n        dispatcherUsername = username;\n        dispatcherPassword = password;\n        return calculatorServerList;\n    }\n\n    @Override\n    public boolean authenticateUser(String userName, String password) throws RemoteException {\n        if (dispatcherUsername == userName && dispatcherPassword == password) {\n            return true;\n        } else {\n            return false;\n        }\n    }\n\n    @Override\n    public boolean addCalculatorToNameServer(String serverAddress, Integer serverCapacity) throws RemoteException {\n        return calculatorServerList.add(new Pair<>(serverAddress, serverCapacity));\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/NameService/NameService.java	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ src/ca/polymtl/inf8480/tp1/NameService/NameService.java	(date 1552840699000)
+@@ -2,7 +2,7 @@
+ 
+ import ca.polymtl.inf8480.tp1.CalculatorServer.CalculatorServer;
+ import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
+-import javafx.util.Pair;
++import ca.polymtl.inf8480.tp1.shared.Tuple;
+ 
+ import java.rmi.ConnectException;
+ import java.rmi.RemoteException;
+@@ -16,7 +16,7 @@
+ 
+     private String dispatcherUsername;
+     private String dispatcherPassword;
+-    private List<Pair<String, Integer>> calculatorServerList = new ArrayList<>();
++    private List<Tuple<String, Integer>> calculatorServerList = new ArrayList<>();
+ 
+     public static void main(String[] args) {
+         NameService nameService = new NameService();
+@@ -48,7 +48,7 @@
+     }
+ 
+     @Override
+-    public List<Pair<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException {
++    public List<Tuple<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException {
+         dispatcherUsername = username;
+         dispatcherPassword = password;
+         return calculatorServerList;
+@@ -65,6 +65,6 @@
+ 
+     @Override
+     public boolean addCalculatorToNameServer(String serverAddress, Integer serverCapacity) throws RemoteException {
+-        return calculatorServerList.add(new Pair<>(serverAddress, serverCapacity));
++        return calculatorServerList.add(new Tuple<>(serverAddress, serverCapacity));
+     }
+ }
+Index: src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.polymtl.inf8480.tp1.Dispatcher;\n\nimport ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;\nimport ca.polymtl.inf8480.tp1.shared.NameServiceInterface;\nimport com.sun.tools.javac.util.Assert;\nimport javafx.util.Pair;\n\nimport java.io.BufferedReader;\nimport java.io.File;\nimport java.io.FileReader;\nimport java.io.IOException;\nimport java.rmi.AccessException;\nimport java.rmi.NotBoundException;\nimport java.rmi.RemoteException;\nimport java.rmi.registry.LocateRegistry;\nimport java.rmi.registry.Registry;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class Dispatcher {\n\n    private String calculationFilePath;\n    private boolean isSecured;\n    private String nameServerAddress;\n    private NameServiceInterface nameServiceInterfaceStub;\n    private String username;\n    private String password;\n\n    public static void main(String[] args) {\n\n        if (args.length > 3) {\n            String calculationFilePath = args[0];\n            String nameServerAddress = args[1];\n            String userName = args[2];\n            String password = args[3];\n\n            boolean secured = true; //Secured if nothing is specified in launch script\n            if (args.length > 4 && args[4].equals(\"notsecured\")) {\n                secured = false;\n            }\n\n            Dispatcher dispatcher= new Dispatcher(calculationFilePath, nameServerAddress, userName, password, secured);\n            dispatcher.run();\n        } else {\n            System.out.println(\"Must specify calculation file path, nameServer address, username, password\");\n        }\n    }\n\n    public Dispatcher(String calculationFilePath, String nameServerAddress, String username, String password, boolean isSecured) {\n        this.calculationFilePath = calculationFilePath;\n        this.isSecured = isSecured;\n        this.username = username;\n        this.password = password;\n\n        nameServiceInterfaceStub = loadNameServiceStub(nameServerAddress);\n    }\n\n    private void run() {\n        //Get op list from file\n        List<Pair<String, Integer>> opList = readOperationList();\n\n        //Get list of calculator servers from the NameService server\n        List<Pair<String, Integer>> calculatorServersInfo; //String is serverAddress, Integer is server capacity\n        try {\n            calculatorServersInfo = nameServiceInterfaceStub.getCalculatorServerList(username, password);\n\n            //TODO: Generate CalculatorServerInteface stubs for each calculator server info\n            //TODO: Put it in hashmap, or list of pairs or whatever to have capacity accessible\n\n            if (isSecured) {\n                //TODO: Dispatch parts of op list to different calculator servers\n                // don't need to confirm return value with other server.\n            } else {\n                //TODO: Dispatch parts of op list to different calculator servers\n                // Need to confirm return value with other server.\n            }\n        } catch (RemoteException e) {\n            e.printStackTrace();\n        }\n\n        //TODO: Consolidate all tasks and print final answer\n    }\n\n    private List<Pair<String, Integer>> readOperationList() {\n        //Split calculation file in operation lines\n        ArrayList<String> operationLines = readCalculationFileLines(new File(calculationFilePath));\n\n        List<Pair<String, Integer>> opList = new ArrayList<>();\n\n        for (String operationLine : operationLines) {\n            //Split operation and number\n            String[] operationContent = operationLine.split(\" \");\n\n            Assert.check(operationContent.length == 2);\n\n            //Add to operation list\n            opList.add(new Pair<>(operationContent[0], Integer.parseInt(operationContent[1])));\n        }\n\n        return opList;\n    }\n\n    private ArrayList<String> readCalculationFileLines(File calculationFile) {\n\n        String line;\n        ArrayList<String> fileLines = new ArrayList();\n        try {\n\n            BufferedReader fileReader = new BufferedReader(new FileReader(calculationFile));\n\n            line = fileReader.readLine();\n            while (line != null) {\n                fileLines.add(line);\n\n                line = fileReader.readLine();\n            }\n\n            fileReader.close();\n        } catch (IOException e) {\n            e.printStackTrace();\n        }\n\n        return fileLines;\n    }\n\n    private NameServiceInterface loadNameServiceStub(String hostname) {\n        NameServiceInterface stub = null;\n\n        try {\n            Registry registry = LocateRegistry.getRegistry(hostname);\n            stub = (NameServiceInterface) registry.lookup(\"nameServer\");\n        } catch (NotBoundException e) {\n            System.out.println(\"Erreur: Le nom '\" + e.getMessage()\n                    + \"' n'est pas défini dans le registre.\");\n        } catch (AccessException e) {\n            //System.out.println(\"Access Exception ---------------------------------------\");\n            System.out.println(\"Erreur: \" + e.getMessage());\n        } catch (RemoteException e) {\n            //System.out.println(\"RemoteException  ---------------------------------------\");\n            System.out.println(\"Erreur: \" + e.getMessage());\n            //System.out.println(\"Detail \" + e.getCause().getCause());\n        }\n\n        return stub;\n    }\n\n    private CalculatorServerInterface loadCalculatorServerStub(String hostname) {\n        CalculatorServerInterface stub = null;\n\n        try {\n            Registry registry = LocateRegistry.getRegistry(hostname);\n            stub = (CalculatorServerInterface) registry.lookup(\"calculatorServer\");\n        } catch (NotBoundException e) {\n            System.out.println(\"Erreur: Le nom '\" + e.getMessage()\n                    + \"' n'est pas défini dans le registre.\");\n        } catch (AccessException e) {\n            //System.out.println(\"Access Exception ---------------------------------------\");\n            System.out.println(\"Erreur: \" + e.getMessage());\n        } catch (RemoteException e) {\n            //System.out.println(\"RemoteException  ---------------------------------------\");\n            System.out.println(\"Erreur: \" + e.getMessage());\n            //System.out.println(\"Detail \" + e.getCause().getCause());\n        }\n\n        return stub;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java	(date 1552840967000)
+@@ -2,8 +2,13 @@
+ 
+ import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
+ import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
+-import com.sun.tools.javac.util.Assert;
+-import javafx.util.Pair;
++import ca.polymtl.inf8480.tp1.shared.Tuple;
++
++import java.util.concurrent.Callable;
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
++import java.util.concurrent.Future;
+ 
+ import java.io.BufferedReader;
+ import java.io.File;
+@@ -57,10 +62,10 @@
+ 
+     private void run() {
+         //Get op list from file
+-        List<Pair<String, Integer>> opList = readOperationList();
++        List<Tuple<String, Integer>> opList = readOperationList();
+ 
+         //Get list of calculator servers from the NameService server
+-        List<Pair<String, Integer>> calculatorServersInfo; //String is serverAddress, Integer is server capacity
++        List<Tuple<String, Integer>> calculatorServersInfo; //String is serverAddress, Integer is server capacity
+         try {
+             calculatorServersInfo = nameServiceInterfaceStub.getCalculatorServerList(username, password);
+ 
+@@ -81,20 +86,18 @@
+         //TODO: Consolidate all tasks and print final answer
+     }
+ 
+-    private List<Pair<String, Integer>> readOperationList() {
++    private List<Tuple<String, Integer>> readOperationList() {
+         //Split calculation file in operation lines
+         ArrayList<String> operationLines = readCalculationFileLines(new File(calculationFilePath));
+ 
+-        List<Pair<String, Integer>> opList = new ArrayList<>();
++        List<Tuple<String, Integer>> opList = new ArrayList<>();
+ 
+         for (String operationLine : operationLines) {
+             //Split operation and number
+             String[] operationContent = operationLine.split(" ");
+ 
+-            Assert.check(operationContent.length == 2);
+-
+             //Add to operation list
+-            opList.add(new Pair<>(operationContent[0], Integer.parseInt(operationContent[1])));
++            opList.add(new Tuple<>(operationContent[0], Integer.parseInt(operationContent[1])));
+         }
+ 
+         return opList;
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"aed5db81-cdc3-49d8-affd-6e8e551dbcb1\" name=\"Default\" comment=\"\" />\n    <ignored path=\"$PROJECT_DIR$/bin/\" />\n    <option name=\"EXCLUDED_CONVERTED_TO_IGNORED\" value=\"true\" />\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileEditorManager\">\n    <leaf>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"368\">\n              <caret line=\"47\" column=\"31\" selection-start-line=\"47\" selection-start-column=\"31\" selection-end-line=\"47\" selection-end-column=\"31\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"60\">\n              <caret line=\"4\" column=\"13\" selection-start-line=\"4\" selection-start-column=\"13\" selection-end-line=\"4\" selection-end-column=\"13\" />\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"true\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"120\">\n              <caret line=\"11\" column=\"31\" selection-start-line=\"11\" selection-start-column=\"31\" selection-end-line=\"11\" selection-end-column=\"31\" />\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"150\">\n              <caret line=\"10\" column=\"22\" selection-start-line=\"10\" selection-start-column=\"22\" selection-end-line=\"10\" selection-end-column=\"22\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"396\">\n              <caret line=\"143\" column=\"43\" selection-start-line=\"143\" selection-start-column=\"43\" selection-end-line=\"143\" selection-end-column=\"43\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n                <element signature=\"e#4431#4432#0\" expanded=\"true\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"150\">\n              <caret line=\"10\" column=\"13\" selection-start-line=\"10\" selection-start-column=\"13\" selection-end-line=\"10\" selection-end-column=\"13\" />\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"615\">\n              <caret line=\"41\" column=\"12\" selection-start-line=\"41\" selection-start-column=\"12\" selection-end-line=\"41\" selection-end-column=\"12\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"180\">\n              <caret line=\"12\" column=\"18\" selection-start-line=\"12\" selection-start-column=\"18\" selection-end-line=\"12\" selection-end-column=\"18\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"483\">\n              <caret line=\"59\" column=\"12\" selection-start-line=\"59\" selection-start-column=\"12\" selection-end-line=\"59\" selection-end-column=\"12\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n      <file pinned=\"false\" current-in-tab=\"false\">\n        <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java\">\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\n            <state relative-caret-position=\"246\">\n              <caret line=\"421\" selection-start-line=\"421\" selection-end-line=\"421\" />\n              <folding>\n                <element signature=\"imports\" expanded=\"true\" />\n                <element signature=\"e#10962#10963#0\" expanded=\"true\" />\n                <element signature=\"e#11012#11013#0\" expanded=\"true\" />\n                <marker date=\"1549833299948\" expanded=\"true\" signature=\"11189:11411\" ph=\"...\" />\n              </folding>\n            </state>\n          </provider>\n        </entry>\n      </file>\n    </leaf>\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"FindInProjectRecents\">\n    <findStrings>\n      <find>println</find>\n    </findStrings>\n  </component>\n  <component name=\"IdeDocumentHistory\">\n    <option name=\"CHANGED_PATHS\">\n      <list>\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java\" />\n        <option value=\"$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"ProjectFrameBounds\" extendedState=\"6\">\n    <option name=\"x\" value=\"49\" />\n    <option name=\"y\" value=\"23\" />\n    <option name=\"width\" value=\"1440\" />\n    <option name=\"height\" value=\"877\" />\n  </component>\n  <component name=\"ProjectView\">\n    <navigator proportions=\"\" version=\"1\">\n      <foldersAlwaysOnTop value=\"true\" />\n    </navigator>\n    <panes>\n      <pane id=\"ProjectPane\">\n        <subPane>\n          <expand>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"tp1\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"tp1\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"CalculatorServer\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"tp1\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"Dispatcher\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"tp1\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"NameService\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"tp1\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"server\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n            <path>\n              <item name=\"TP2_infonuagique\" type=\"b2602c69:ProjectViewProjectNode\" />\n              <item name=\"TP2_infonuagique\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"src\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"tp1\" type=\"462c0819:PsiDirectoryNode\" />\n              <item name=\"shared\" type=\"462c0819:PsiDirectoryNode\" />\n            </path>\n          </expand>\n          <select />\n        </subPane>\n      </pane>\n      <pane id=\"Scope\" />\n      <pane id=\"PackagesPane\" />\n    </panes>\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp\" value=\"1552273972270\" />\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$\" />\n    <property name=\"project.structure.last.edited\" value=\"Modules\" />\n    <property name=\"project.structure.proportion\" value=\"0.0\" />\n    <property name=\"project.structure.side.proportion\" value=\"0.0\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.lookFeel\" />\n  </component>\n  <component name=\"RunDashboard\">\n    <option name=\"ruleStates\">\n      <list>\n        <RuleState>\n          <option name=\"name\" value=\"ConfigurationTypeDashboardGroupingRule\" />\n        </RuleState>\n        <RuleState>\n          <option name=\"name\" value=\"StatusDashboardGroupingRule\" />\n        </RuleState>\n      </list>\n    </option>\n  </component>\n  <component name=\"RunManager\">\n    <configuration default=\"true\" type=\"Applet\">\n      <option name=\"POLICY_FILE\" value=\"$APPLICATION_HOME_DIR$/bin/appletviewer.policy\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration default=\"true\" type=\"Application\" factoryName=\"Application\">\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration default=\"true\" type=\"JUnit\" factoryName=\"JUnit\">\n      <option name=\"TEST_OBJECT\" value=\"class\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$MODULE_DIR$\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration default=\"true\" type=\"TestNG\">\n      <option name=\"WORKING_DIRECTORY\" value=\"$MODULE_DIR$\" />\n      <properties />\n      <listeners />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration default=\"true\" type=\"#org.jetbrains.idea.devkit.run.PluginConfigurationType\">\n      <module name=\"\" />\n      <option name=\"VM_PARAMETERS\" value=\"-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea\" />\n      <option name=\"PROGRAM_PARAMETERS\" />\n      <predefined_log_file enabled=\"true\" id=\"idea.log\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n  </component>\n  <component name=\"SvnConfiguration\">\n    <configuration />\n  </component>\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"aed5db81-cdc3-49d8-affd-6e8e551dbcb1\" name=\"Default\" comment=\"\" />\n      <created>1548094631155</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1548094631155</updated>\n    </task>\n    <servers />\n  </component>\n  <component name=\"ToolWindowManager\">\n    <frame x=\"0\" y=\"23\" width=\"1440\" height=\"877\" extended-state=\"6\" />\n    <layout>\n      <window_info active=\"true\" content_ui=\"combo\" id=\"Project\" order=\"0\" visible=\"true\" weight=\"0.1702432\" />\n      <window_info id=\"Structure\" order=\"1\" weight=\"0.25\" />\n      <window_info id=\"Nl-Palette\" order=\"2\" />\n      <window_info id=\"Favorites\" order=\"3\" side_tool=\"true\" />\n      <window_info id=\"Image Layers\" order=\"4\" />\n      <window_info id=\"Designer\" order=\"5\" />\n      <window_info id=\"UI Designer\" order=\"6\" />\n      <window_info id=\"Capture Tool\" order=\"7\" />\n      <window_info anchor=\"bottom\" id=\"Message\" order=\"0\" />\n      <window_info anchor=\"bottom\" id=\"Find\" order=\"1\" />\n      <window_info anchor=\"bottom\" id=\"Run\" order=\"2\" />\n      <window_info anchor=\"bottom\" id=\"Debug\" order=\"3\" weight=\"0.4\" />\n      <window_info anchor=\"bottom\" id=\"Cvs\" order=\"4\" weight=\"0.25\" />\n      <window_info anchor=\"bottom\" id=\"Inspection\" order=\"5\" weight=\"0.4\" />\n      <window_info anchor=\"bottom\" id=\"TODO\" order=\"6\" />\n      <window_info anchor=\"bottom\" id=\"Terminal\" order=\"7\" weight=\"0.24377358\" />\n      <window_info anchor=\"bottom\" id=\"Event Log\" order=\"8\" side_tool=\"true\" weight=\"0.32981133\" />\n      <window_info anchor=\"bottom\" id=\"Version Control\" order=\"9\" show_stripe_button=\"false\" />\n      <window_info anchor=\"bottom\" id=\"Messages\" order=\"10\" weight=\"0.17509434\" />\n      <window_info anchor=\"right\" id=\"Commander\" order=\"0\" weight=\"0.4\" />\n      <window_info anchor=\"right\" id=\"Ant Build\" order=\"1\" visible=\"true\" weight=\"0.18168813\" />\n      <window_info anchor=\"right\" content_ui=\"combo\" id=\"Hierarchy\" order=\"2\" weight=\"0.25\" />\n      <window_info anchor=\"right\" id=\"Palette\" order=\"3\" />\n      <window_info anchor=\"right\" id=\"Capture Analysis\" order=\"4\" />\n      <window_info anchor=\"right\" id=\"Theme Preview\" order=\"5\" />\n      <window_info anchor=\"right\" id=\"Properties\" order=\"6\" />\n      <window_info anchor=\"right\" id=\"Palette&#9;\" order=\"7\" />\n      <window_info anchor=\"right\" id=\"Maven Projects\" order=\"8\" />\n      <window_info anchor=\"right\" id=\"Maven\" order=\"9\" />\n    </layout>\n  </component>\n  <component name=\"antWorkspaceConfiguration\">\n    <option name=\"IS_AUTOSCROLL_TO_SOURCE\" value=\"false\" />\n    <option name=\"FILTER_TARGETS\" value=\"false\" />\n    <buildFile url=\"file://$PROJECT_DIR$/build.xml\">\n      <targetFilters>\n        <filter targetName=\"init\" isVisible=\"false\" />\n        <filter targetName=\"clean\" isVisible=\"false\" />\n        <filter targetName=\"build-class\" isVisible=\"false\" />\n        <filter targetName=\"build-jar\" isVisible=\"false\" />\n      </targetFilters>\n      <expanded value=\"true\" />\n    </buildFile>\n  </component>\n  <component name=\"editorHistoryManager\">\n    <entry file=\"file://$PROJECT_DIR$/server.sh\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"270\">\n          <caret line=\"18\" column=\"1\" selection-start-line=\"18\" selection-start-column=\"1\" selection-end-line=\"18\" selection-end-column=\"1\" />\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/client.sh\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"90\">\n          <caret line=\"6\" column=\"18\" selection-start-line=\"6\" selection-start-column=\"18\" selection-end-line=\"6\" selection-end-column=\"18\" />\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/FakeServer.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"30\">\n          <caret line=\"2\" column=\"13\" selection-start-line=\"2\" selection-start-column=\"13\" selection-end-line=\"2\" selection-end-column=\"13\" />\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"246\">\n          <caret line=\"421\" selection-start-line=\"421\" selection-end-line=\"421\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n            <element signature=\"e#10962#10963#0\" expanded=\"true\" />\n            <element signature=\"e#11012#11013#0\" expanded=\"true\" />\n            <marker date=\"1549833299948\" expanded=\"true\" signature=\"11189:11411\" ph=\"...\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"60\">\n          <caret line=\"4\" column=\"13\" selection-start-line=\"4\" selection-start-column=\"13\" selection-end-line=\"4\" selection-end-column=\"13\" />\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"368\">\n          <caret line=\"47\" column=\"31\" selection-start-line=\"47\" selection-start-column=\"31\" selection-end-line=\"47\" selection-end-column=\"31\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"396\">\n          <caret line=\"143\" column=\"43\" selection-start-line=\"143\" selection-start-column=\"43\" selection-end-line=\"143\" selection-end-column=\"43\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n            <element signature=\"e#4431#4432#0\" expanded=\"true\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"150\">\n          <caret line=\"10\" column=\"13\" selection-start-line=\"10\" selection-start-column=\"13\" selection-end-line=\"10\" selection-end-column=\"13\" />\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"615\">\n          <caret line=\"41\" column=\"12\" selection-start-line=\"41\" selection-start-column=\"12\" selection-end-line=\"41\" selection-end-column=\"12\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"483\">\n          <caret line=\"59\" column=\"12\" selection-start-line=\"59\" selection-start-column=\"12\" selection-end-line=\"59\" selection-end-column=\"12\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"150\">\n          <caret line=\"10\" column=\"22\" selection-start-line=\"10\" selection-start-column=\"22\" selection-end-line=\"10\" selection-end-column=\"22\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"180\">\n          <caret line=\"12\" column=\"18\" selection-start-line=\"12\" selection-start-column=\"18\" selection-end-line=\"12\" selection-end-column=\"18\" />\n          <folding>\n            <element signature=\"imports\" expanded=\"true\" />\n          </folding>\n        </state>\n      </provider>\n    </entry>\n    <entry file=\"file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java\">\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\n        <state relative-caret-position=\"120\">\n          <caret line=\"11\" column=\"31\" selection-start-line=\"11\" selection-start-column=\"31\" selection-end-line=\"11\" selection-end-column=\"31\" />\n        </state>\n      </provider>\n    </entry>\n  </component>\n  <component name=\"masterDetails\">\n    <states>\n      <state key=\"ArtifactsStructureConfigurable.UI\">\n        <settings>\n          <artifact-editor />\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n      <state key=\"FacetStructureConfigurable.UI\">\n        <settings>\n          <last-edited>No facets are configured</last-edited>\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n      <state key=\"GlobalLibrariesConfigurable.UI\">\n        <settings>\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n      <state key=\"JdkListConfigurable.UI\">\n        <settings>\n          <last-edited>1.8</last-edited>\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n      <state key=\"ModuleStructureConfigurable.UI\">\n        <settings>\n          <last-edited>TP2</last-edited>\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n      <state key=\"ProjectJDKs.UI\">\n        <settings>\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n      <state key=\"ProjectLibrariesConfigurable.UI\">\n        <settings>\n          <splitter-proportions>\n            <option name=\"proportions\">\n              <list>\n                <option value=\"0.2\" />\n              </list>\n            </option>\n          </splitter-proportions>\n        </settings>\n      </state>\n    </states>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/workspace.xml	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ .idea/workspace.xml	(date 1552841007000)
+@@ -1,7 +1,16 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-    <list default="true" id="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" name="Default" comment="" />
++    <list default="true" id="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" name="Default" comment="">
++      <change afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/Tuple.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java" afterDir="false" />
++    </list>
+     <ignored path="$PROJECT_DIR$/bin/" />
+     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+     <option name="SHOW_DIALOG" value="false" />
+@@ -10,33 +19,21 @@
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+   <component name="FileEditorManager">
+-    <leaf>
++    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+       <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java">
++        <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="368">
+-              <caret line="47" column="31" selection-start-line="47" selection-start-column="31" selection-end-line="47" selection-end-column="31" />
+-              <folding>
+-                <element signature="imports" expanded="true" />
+-              </folding>
++            <state relative-caret-position="90">
++              <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+             </state>
+           </provider>
+         </entry>
+       </file>
+       <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java">
++        <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/Tuple.java">
+           <provider selected="true" editor-type-id="text-editor">
+             <state relative-caret-position="60">
+-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="true">
+-        <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="120">
+-              <caret line="11" column="31" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
++              <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
+             </state>
+           </provider>
+         </entry>
+@@ -44,8 +41,8 @@
+       <file pinned="false" current-in-tab="false">
+         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="150">
+-              <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
++            <state relative-caret-position="105">
++              <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+               <folding>
+                 <element signature="imports" expanded="true" />
+               </folding>
+@@ -56,10 +53,10 @@
+       <file pinned="false" current-in-tab="false">
+         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="396">
+-              <caret line="143" column="43" selection-start-line="143" selection-start-column="43" selection-end-line="143" selection-end-column="43" />
++            <state relative-caret-position="75">
++              <caret line="5" selection-start-line="5" selection-end-line="5" />
+               <folding>
+-                <element signature="imports" expanded="true" />
++                <element signature="e#4394#4395#0" expanded="true" />
+                 <element signature="e#4431#4432#0" expanded="true" />
+               </folding>
+             </state>
+@@ -75,23 +72,25 @@
+           </provider>
+         </entry>
+       </file>
+-      <file pinned="false" current-in-tab="false">
++      <file pinned="false" current-in-tab="true">
+         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="615">
+-              <caret line="41" column="12" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
+-              <folding>
+-                <element signature="imports" expanded="true" />
+-              </folding>
++            <state relative-caret-position="24">
++              <caret line="10" column="34" selection-start-line="10" selection-start-column="34" selection-end-line="10" selection-end-column="34" />
+             </state>
+           </provider>
++        </entry>
++      </file>
++      <file pinned="false" current-in-tab="false">
++        <entry file="file://$PROJECT_DIR$/build.xml">
++          <provider selected="true" editor-type-id="text-editor" />
+         </entry>
+       </file>
+       <file pinned="false" current-in-tab="false">
+         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="180">
+-              <caret line="12" column="18" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
++            <state relative-caret-position="90">
++              <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+               <folding>
+                 <element signature="imports" expanded="true" />
+               </folding>
+@@ -102,8 +101,8 @@
+       <file pinned="false" current-in-tab="false">
+         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="483">
+-              <caret line="59" column="12" selection-start-line="59" selection-start-column="12" selection-end-line="59" selection-end-column="12" />
++            <state relative-caret-position="210">
++              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+               <folding>
+                 <element signature="imports" expanded="true" />
+               </folding>
+@@ -114,7 +113,7 @@
+       <file pinned="false" current-in-tab="false">
+         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="246">
++            <state relative-caret-position="6090">
+               <caret line="421" selection-start-line="421" selection-end-line="421" />
+               <folding>
+                 <element signature="imports" expanded="true" />
+@@ -139,34 +138,39 @@
+     <findStrings>
+       <find>println</find>
+     </findStrings>
++  </component>
++  <component name="Git.Settings">
++    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+   </component>
+   <component name="IdeDocumentHistory">
+     <option name="CHANGED_PATHS">
+       <list>
+-        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java" />
+-        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" />
++        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java" />
++        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/Tuple.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java" />
++        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java" />
+         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java" />
+       </list>
+     </option>
+   </component>
+   <component name="ProjectFrameBounds" extendedState="6">
+-    <option name="x" value="49" />
+     <option name="y" value="23" />
+     <option name="width" value="1440" />
+     <option name="height" value="877" />
+   </component>
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+   <component name="ProjectView">
+     <navigator proportions="" version="1">
+       <foldersAlwaysOnTop value="true" />
+     </navigator>
+     <panes>
++      <pane id="Scope" />
+       <pane id="ProjectPane">
+         <subPane>
+           <expand>
+@@ -211,30 +215,22 @@
+               <item name="TP2_infonuagique" type="462c0819:PsiDirectoryNode" />
+               <item name="src" type="462c0819:PsiDirectoryNode" />
+               <item name="tp1" type="462c0819:PsiDirectoryNode" />
+-              <item name="server" type="462c0819:PsiDirectoryNode" />
+-            </path>
+-            <path>
+-              <item name="TP2_infonuagique" type="b2602c69:ProjectViewProjectNode" />
+-              <item name="TP2_infonuagique" type="462c0819:PsiDirectoryNode" />
+-              <item name="src" type="462c0819:PsiDirectoryNode" />
+-              <item name="tp1" type="462c0819:PsiDirectoryNode" />
+               <item name="shared" type="462c0819:PsiDirectoryNode" />
+             </path>
+           </expand>
+           <select />
+         </subPane>
+       </pane>
+-      <pane id="Scope" />
+       <pane id="PackagesPane" />
+     </panes>
+   </component>
+   <component name="PropertiesComponent">
+-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552273972270" />
++    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552840969574" />
+     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+-    <property name="project.structure.last.edited" value="Modules" />
+-    <property name="project.structure.proportion" value="0.0" />
+-    <property name="project.structure.side.proportion" value="0.0" />
+-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
++    <property name="project.structure.last.edited" value="Project" />
++    <property name="project.structure.proportion" value="0.15" />
++    <property name="project.structure.side.proportion" value="0.2" />
++    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
+   </component>
+   <component name="RunDashboard">
+     <option name="ruleStates">
+@@ -299,10 +295,19 @@
+     </task>
+     <servers />
+   </component>
++  <component name="TodoView">
++    <todo-panel id="selected-file">
++      <is-autoscroll-to-source value="true" />
++    </todo-panel>
++    <todo-panel id="all">
++      <are-packages-shown value="true" />
++      <is-autoscroll-to-source value="true" />
++    </todo-panel>
++  </component>
+   <component name="ToolWindowManager">
+-    <frame x="0" y="23" width="1440" height="877" extended-state="6" />
++    <frame x="0" y="23" width="2560" height="1417" extended-state="6" />
+     <layout>
+-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1702432" />
++      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.098093726" />
+       <window_info id="Structure" order="1" weight="0.25" />
+       <window_info id="Nl-Palette" order="2" />
+       <window_info id="Favorites" order="3" side_tool="true" />
+@@ -316,13 +321,13 @@
+       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+-      <window_info anchor="bottom" id="TODO" order="6" />
++      <window_info anchor="bottom" id="TODO" order="6" weight="0.32981133" />
+       <window_info anchor="bottom" id="Terminal" order="7" weight="0.24377358" />
+       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32981133" />
+-      <window_info anchor="bottom" id="Version Control" order="9" show_stripe_button="false" />
+-      <window_info anchor="bottom" id="Messages" order="10" weight="0.17509434" />
++      <window_info active="true" anchor="bottom" id="Version Control" order="9" visible="true" weight="0.32981133" />
++      <window_info anchor="bottom" id="Messages" order="10" weight="0.38943395" />
+       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+-      <window_info anchor="right" id="Ant Build" order="1" visible="true" weight="0.18168813" />
++      <window_info anchor="right" id="Ant Build" order="1" visible="true" weight="0.067911044" />
+       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+       <window_info anchor="right" id="Palette" order="3" />
+       <window_info anchor="right" id="Capture Analysis" order="4" />
+@@ -368,68 +373,68 @@
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java">
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="246">
+-          <caret line="421" selection-start-line="421" selection-end-line="421" />
++        <state relative-caret-position="465">
++          <caret line="47" column="31" selection-start-line="47" selection-start-column="31" selection-end-line="47" selection-end-column="31" />
+           <folding>
+             <element signature="imports" expanded="true" />
+-            <element signature="e#10962#10963#0" expanded="true" />
+-            <element signature="e#11012#11013#0" expanded="true" />
+-            <marker date="1549833299948" expanded="true" signature="11189:11411" ph="..." />
+           </folding>
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java">
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="60">
+-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
++        <state relative-caret-position="120">
++          <caret line="11" column="31" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/server/Server.java">
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="368">
+-          <caret line="47" column="31" selection-start-line="47" selection-start-column="31" selection-end-line="47" selection-end-column="31" />
+-          <folding>
+-            <element signature="imports" expanded="true" />
+-          </folding>
++        <state relative-caret-position="150">
++          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java">
++    <entry file="file://$PROJECT_DIR$/build.xml">
++      <provider selected="true" editor-type-id="text-editor" />
++    </entry>
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/client/Client.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="396">
+-          <caret line="143" column="43" selection-start-line="143" selection-start-column="43" selection-end-line="143" selection-end-column="43" />
++        <state relative-caret-position="6090">
++          <caret line="421" selection-start-line="421" selection-end-line="421" />
+           <folding>
+             <element signature="imports" expanded="true" />
+-            <element signature="e#4431#4432#0" expanded="true" />
++            <element signature="e#10962#10963#0" expanded="true" />
++            <element signature="e#11012#11013#0" expanded="true" />
++            <marker date="1549833299948" expanded="true" signature="11189:11411" ph="..." />
+           </folding>
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java">
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/Tuple.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="150">
+-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
++        <state relative-caret-position="60">
++          <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java">
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="615">
+-          <caret line="41" column="12" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
++        <state relative-caret-position="75">
++          <caret line="5" selection-start-line="5" selection-end-line="5" />
+           <folding>
+-            <element signature="imports" expanded="true" />
++            <element signature="e#4394#4395#0" expanded="true" />
++            <element signature="e#4431#4432#0" expanded="true" />
+           </folding>
+         </state>
+       </provider>
+     </entry>
+     <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="483">
+-          <caret line="59" column="12" selection-start-line="59" selection-start-column="12" selection-end-line="59" selection-end-column="12" />
++        <state relative-caret-position="210">
++          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+           <folding>
+             <element signature="imports" expanded="true" />
+           </folding>
+@@ -438,8 +443,8 @@
+     </entry>
+     <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="150">
+-          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
++        <state relative-caret-position="105">
++          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+           <folding>
+             <element signature="imports" expanded="true" />
+           </folding>
+@@ -448,18 +453,25 @@
+     </entry>
+     <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="180">
+-          <caret line="12" column="18" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
++        <state relative-caret-position="90">
++          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+           <folding>
+             <element signature="imports" expanded="true" />
+           </folding>
+         </state>
+       </provider>
+     </entry>
+-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/ServerInterface.java">
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java">
++      <provider selected="true" editor-type-id="text-editor">
++        <state relative-caret-position="90">
++          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
++        </state>
++      </provider>
++    </entry>
++    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state relative-caret-position="120">
+-          <caret line="11" column="31" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
++        <state relative-caret-position="24">
++          <caret line="10" column="34" selection-start-line="10" selection-start-column="34" selection-end-line="10" selection-end-column="34" />
+         </state>
+       </provider>
+     </entry>
+Index: src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.polymtl.inf8480.tp1.CalculatorServer;\n\nimport ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;\nimport ca.polymtl.inf8480.tp1.shared.NameServiceInterface;\nimport javafx.util.Pair;\n\nimport java.rmi.AccessException;\nimport java.rmi.ConnectException;\nimport java.rmi.NotBoundException;\nimport java.rmi.RemoteException;\nimport java.rmi.registry.LocateRegistry;\nimport java.rmi.registry.Registry;\nimport java.rmi.server.UnicastRemoteObject;\nimport java.util.List;\nimport java.util.Random;\n\npublic class CalculatorServer implements CalculatorServerInterface {\n\n    private int serverCapacity; //QI in PDF for lab\n    private int maliciousPercentage; //m in PDF\n    private String nameServerHostname;\n    private NameServiceInterface nameServiceStub;\n\n    public static void main(String[] args) {\n        if (args.length > 2) {\n            CalculatorServer server = new CalculatorServer(Integer.parseInt(args[0]), //Server capacity\n                                                           Integer.parseInt(args[1]), //Malicious percentage\n                                                           args[2]);                  //NameService address\n            server.run();\n        } else {\n            System.out.println(\"Calculator server requires ServerCapacity, MaliciousPercentage and\" +\n                    \" name service address as arguments\");\n        }\n    }\n\n    public CalculatorServer(int serverCapacity, int maliciousPercentage, String nameServerHostName) {\n        super();\n\n        this.serverCapacity = serverCapacity;\n        this.maliciousPercentage = maliciousPercentage;\n        this.nameServerHostname = nameServerHostName;\n\n        nameServiceStub = loadNameServiceStub(nameServerHostName);\n\n        //TODO: Confirm how we want to go about adding calculator server to name service\n        // Probably want to pass IP address, so the dipatcher can get a list of IP\n        // addresses and create stubs on its side when it starts.\n        try {\n            //TODO: get current IP address\n            nameServiceStub.addCalculatorToNameServer(\"THIS IS A PLACEHOLDER\", serverCapacity);\n        } catch (RemoteException e) {\n            e.printStackTrace();\n        }\n    }\n\n    private void run() {\n        if (System.getSecurityManager() == null) {\n            System.setSecurityManager(new SecurityManager());\n        }\n\n        try {\n            CalculatorServerInterface stub = (CalculatorServerInterface) UnicastRemoteObject\n                    .exportObject(this, 0);\n\n            Registry registry = LocateRegistry.getRegistry();\n            registry.rebind(\"calculatorServer\", stub);\n\n            System.out.println(\"Server ready.\");\n\n        } catch (ConnectException e) {\n            System.err\n                    .println(\"Impossible de se connecter au registre RMI. Est-ce que rmiregistry est lancé ?\");\n            System.err.println();\n            System.err.println(\"Erreur: \" + e.getMessage());\n        } catch (Exception e) {\n            System.err.println(\"Erreur: \" + e.getMessage());\n        }\n    }\n\n    // Returns -1 if the server is unable to do the task because of lack of resources.\n    @Override\n    public int calculateTaskList(List<Pair<String, Integer>> operationList, String username, String password) throws RemoteException {\n        if (!confirmResourcesAvailable(operationList.size()) || confirmDispatcherLogin(username, password)) {\n            return -1;\n        }\n\n        int total = 0;\n\n        for (Pair<String, Integer> operation : operationList) {\n            if (operation.getKey().equals(\"pell\")) {\n                total += Operations.pell(operation.getValue()) % 5000;\n                total = total % 5000;\n            } else if (operation.getKey().equals(\"prime\")) {\n                total += Operations.prime(operation.getValue()) % 5000;\n                total = total % 5000;\n            } else {\n                System.out.println(\"Error wrong operation type used\");\n                break;\n            }\n        }\n\n        Random rdm = new Random();\n        if (rdm.nextInt(100 + 1) >= maliciousPercentage) {\n            return total; //Returns right answer\n        } else {\n            return rdm.nextInt(total);  //Returns malicious answer,\n                                        //random between 0 and correct answer for simulation purposes\n        }\n    }\n\n    @Override\n    public int getCalculatorCapacity() {\n        return serverCapacity;\n    }\n\n    private boolean confirmResourcesAvailable(int taskSize) {\n        // Chances T of resources not being available\n        float t = ((taskSize - serverCapacity) / (5.0f * serverCapacity)) * 100;\n\n        Random rdm = new Random();\n        if (rdm.nextInt(100 + 1) > t) { //If value is bigger than the chances of failing, it's a success\n            return true;\n        } else {\n            return false;\n        }\n    }\n\n    private boolean confirmDispatcherLogin(String username, String password) {\n        try {\n            return nameServiceStub.authenticateUser(username, password);\n\n        } catch (RemoteException e) {\n            e.printStackTrace();\n        }\n\n        return false;\n    }\n\n\n    private NameServiceInterface loadNameServiceStub(String hostname) {\n        NameServiceInterface stub = null;\n\n        try {\n            Registry registry = LocateRegistry.getRegistry(hostname);\n            stub = (NameServiceInterface) registry.lookup(\"nameServer\");\n        } catch (NotBoundException e) {\n            System.out.println(\"Erreur: Le nom '\" + e.getMessage()\n                    + \"' n'est pas défini dans le registre.\");\n        } catch (AccessException e) {\n            //System.out.println(\"Access Exception ---------------------------------------\");\n            System.out.println(\"Erreur: \" + e.getMessage());\n        } catch (RemoteException e) {\n            //System.out.println(\"RemoteException  ---------------------------------------\");\n            System.out.println(\"Erreur: \" + e.getMessage());\n            //System.out.println(\"Detail \" + e.getCause().getCause());\n        }\n\n        return stub;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java	(revision 7343829575adf2eb65a9c974589a1604fe3deb0a)
++++ src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java	(date 1552840891000)
+@@ -2,7 +2,7 @@
+ 
+ import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
+ import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
+-import javafx.util.Pair;
++import ca.polymtl.inf8480.tp1.shared.Tuple;
+ 
+ import java.rmi.AccessException;
+ import java.rmi.ConnectException;
+@@ -79,19 +79,19 @@
+ 
+     // Returns -1 if the server is unable to do the task because of lack of resources.
+     @Override
+-    public int calculateTaskList(List<Pair<String, Integer>> operationList, String username, String password) throws RemoteException {
++    public int calculateTaskList(List<Tuple<String, Integer>> operationList, String username, String password) throws RemoteException {
+         if (!confirmResourcesAvailable(operationList.size()) || confirmDispatcherLogin(username, password)) {
+             return -1;
+         }
+ 
+         int total = 0;
+ 
+-        for (Pair<String, Integer> operation : operationList) {
+-            if (operation.getKey().equals("pell")) {
+-                total += Operations.pell(operation.getValue()) % 5000;
++        for (Tuple<String, Integer> operation : operationList) {
++            if (operation.x.equals("pell")) {
++                total += Operations.pell(operation.y) % 5000;
+                 total = total % 5000;
+-            } else if (operation.getKey().equals("prime")) {
+-                total += Operations.prime(operation.getValue()) % 5000;
++            } else if (operation.x.equals("prime")) {
++                total += Operations.prime(operation.y) % 5000;
+                 total = total % 5000;
+             } else {
+                 System.out.println("Error wrong operation type used");
+Index: src/ca/polymtl/inf8480/tp1/shared/Tuple.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ca/polymtl/inf8480/tp1/shared/Tuple.java	(date 1552840578000)
++++ src/ca/polymtl/inf8480/tp1/shared/Tuple.java	(date 1552840578000)
+@@ -0,0 +1,12 @@
++package ca.polymtl.inf8480.tp1.shared;
++
++import java.io.Serializable;
++
++public class Tuple<X, Y> implements Serializable {
++    public final X x;
++    public final Y y;
++    public Tuple(X x, Y y) {
++        this.x = x;
++        this.y = y;
++    }
++}

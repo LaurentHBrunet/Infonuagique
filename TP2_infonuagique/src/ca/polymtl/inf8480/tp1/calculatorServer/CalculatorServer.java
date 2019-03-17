@@ -1,9 +1,10 @@
-package ca.polymtl.inf8480.tp1.CalculatorServer;
+package ca.polymtl.inf8480.tp1.calculatorServer;
 
 import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import javafx.util.Pair;
+import ca.polymtl.inf8480.tp1.shared.Tuple;
 
+import java.net.Inet4Address;
 import java.rmi.AccessException;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
@@ -11,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,13 +24,14 @@ public class CalculatorServer implements CalculatorServerInterface {
     private NameServiceInterface nameServiceStub;
 
     public static void main(String[] args) {
-        if (args.length > 2) {
-            CalculatorServer server = new CalculatorServer(Integer.parseInt(args[0]), //Server capacity
-                                                           Integer.parseInt(args[1]), //Malicious percentage
-                                                           args[2]);                  //NameService address
+
+        if (args.length > 3) {
+            CalculatorServer server = new CalculatorServer(Integer.parseInt(args[1]), //Server capacity
+                                                           Integer.parseInt(args[2]), //Malicious percentage
+                                                           args[3]);                  //nameService address
             server.run();
         } else {
-            System.out.println("Calculator server requires ServerCapacity, MaliciousPercentage and" +
+            System.out.println("Calculator server requires Hostname, ServerCapacity, MaliciousPercentage and" +
                     " name service address as arguments");
         }
     }
@@ -42,13 +45,11 @@ public class CalculatorServer implements CalculatorServerInterface {
 
         nameServiceStub = loadNameServiceStub(nameServerHostName);
 
-        //TODO: Confirm how we want to go about adding calculator server to name service
-        // Probably want to pass IP address, so the dipatcher can get a list of IP
-        // addresses and create stubs on its side when it starts.
         try {
             //TODO: get current IP address
-            nameServiceStub.addCalculatorToNameServer("THIS IS A PLACEHOLDER", serverCapacity);
-        } catch (RemoteException e) {
+            System.out.println("Adding server " + Inet4Address.getLocalHost().getHostAddress() + " to name server, Capacity : " + serverCapacity);
+            nameServiceStub.addCalculatorToNameServer(Inet4Address.getLocalHost().getHostAddress(), serverCapacity);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -79,19 +80,24 @@ public class CalculatorServer implements CalculatorServerInterface {
 
     // Returns -1 if the server is unable to do the task because of lack of resources.
     @Override
-    public int calculateTaskList(List<Pair<String, Integer>> operationList, String username, String password) throws RemoteException {
+    public int calculateTaskList(ArrayList<Tuple<String, Integer>> operationList, String username, String password) throws RemoteException {
+        System.out.println("Calculating task of size " + operationList.size());
+
         if (!confirmResourcesAvailable(operationList.size()) || confirmDispatcherLogin(username, password)) {
+            System.out.println("Error cannot calculate task, returning -1");
             return -1;
         }
 
+        System.out.println("Calculating task");
+
         int total = 0;
 
-        for (Pair<String, Integer> operation : operationList) {
-            if (operation.getKey().equals("pell")) {
-                total += Operations.pell(operation.getValue()) % 5000;
+        for (Tuple<String, Integer> operation : operationList) {
+            if (operation.x.equals("pell")) {
+                total += Operations.pell(operation.y) % 5000;
                 total = total % 5000;
-            } else if (operation.getKey().equals("prime")) {
-                total += Operations.prime(operation.getValue()) % 5000;
+            } else if (operation.x.equals("prime")) {
+                total += Operations.prime(operation.y) % 5000;
                 total = total % 5000;
             } else {
                 System.out.println("Error wrong operation type used");
@@ -101,24 +107,24 @@ public class CalculatorServer implements CalculatorServerInterface {
 
         Random rdm = new Random();
         if (rdm.nextInt(100 + 1) >= maliciousPercentage) {
+            System.out.println("returning correct value of " + total);
             return total; //Returns right answer
         } else {
+            System.out.println("returning wrong value because of malicious server");
             return rdm.nextInt(total);  //Returns malicious answer,
                                         //random between 0 and correct answer for simulation purposes
         }
     }
 
-    @Override
-    public int getCalculatorCapacity() {
-        return serverCapacity;
-    }
-
     private boolean confirmResourcesAvailable(int taskSize) {
         // Chances T of resources not being available
         float t = ((taskSize - serverCapacity) / (5.0f * serverCapacity)) * 100;
+        System.out.println("Chances of failure " + t);
 
         Random rdm = new Random();
-        if (rdm.nextInt(100 + 1) > t) { //If value is bigger than the chances of failing, it's a success
+        int test = rdm.nextInt(100 + 1);
+        System.out.println("Random chances " + test);
+        if (test > t) { //If value is bigger than the chances of failing, it's a success
             return true;
         } else {
             return false;
