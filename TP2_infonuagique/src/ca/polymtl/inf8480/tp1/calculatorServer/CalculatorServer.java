@@ -22,11 +22,13 @@ public class CalculatorServer implements CalculatorServerInterface {
     private int maliciousPercentage; //m in PDF
     private String nameServerHostname;
     private NameServiceInterface nameServiceStub;
+    private String hostname;
 
     public static void main(String[] args) {
 
         if (args.length > 3) {
-            CalculatorServer server = new CalculatorServer(Integer.parseInt(args[1]), //Server capacity
+            CalculatorServer server = new CalculatorServer(args[0],
+                                                           Integer.parseInt(args[1]), //Server capacity
                                                            Integer.parseInt(args[2]), //Malicious percentage
                                                            args[3]);                  //nameService address
             server.run();
@@ -36,9 +38,10 @@ public class CalculatorServer implements CalculatorServerInterface {
         }
     }
 
-    public CalculatorServer(int serverCapacity, int maliciousPercentage, String nameServerHostName) {
+    public CalculatorServer(String hostname, int serverCapacity, int maliciousPercentage, String nameServerHostName) {
         super();
 
+        this.hostname = hostname;
         this.serverCapacity = serverCapacity;
         this.maliciousPercentage = maliciousPercentage;
         this.nameServerHostname = nameServerHostName;
@@ -47,8 +50,7 @@ public class CalculatorServer implements CalculatorServerInterface {
 
         try {
             //TODO: get current IP address
-            System.out.println("Adding server " + Inet4Address.getLocalHost().getHostAddress() + " to name server, Capacity : " + serverCapacity);
-            nameServiceStub.addCalculatorToNameServer(Inet4Address.getLocalHost().getHostAddress(), serverCapacity);
+            nameServiceStub.addCalculatorToNameServer(hostname, serverCapacity);
         } catch (Exception e) {
             e.printStackTrace();
         }

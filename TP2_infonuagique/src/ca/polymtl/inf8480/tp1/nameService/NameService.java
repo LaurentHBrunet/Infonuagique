@@ -29,7 +29,7 @@ public class NameService implements NameServiceInterface {
 
         try {
             NameServiceInterface stub = (NameServiceInterface) UnicastRemoteObject
-                    .exportObject(this, 0);
+                    .exportObject(this,0);
 
             Registry registry = LocateRegistry.getRegistry();
             registry.rebind("nameServer", stub);

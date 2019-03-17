@@ -4,6 +4,8 @@ import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
 import ca.polymtl.inf8480.tp1.shared.Tuple;
 
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.*;
 
 import java.io.BufferedReader;
@@ -139,60 +141,84 @@ public class Dispatcher {
         return taskTotal;
     }
 
+    private class UnsecuredRequest {
+        protected CallableCalculatorServer callableCalculatorServer;
+        protected Future<Integer> response;
+        protected int requestId;
+
+        UnsecuredRequest(CallableCalculatorServer callableCalculatorServer, Future<Integer> response, int requestId) {
+           this.callableCalculatorServer = callableCalculatorServer;
+           this.response = response;
+           this.requestId = requestId;
+        }
+    }
 
 
     private int dispatchUnsecured(ArrayList<Tuple<String, Integer>> opList) {
         int taskTotal = 0;
-        Executor executor = Executors.newCachedThreadPool();
-        ExecutorCompletionService<Integer> ecs = new ExecutorCompletionService<>(executor);
-
-        List<Callable<Integer>> callableList = new ArrayList<>();
-        List<Future<Integer>> futureList = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<UnsecuredRequest> asyncResponseList = new ArrayList<>();
+        List<Set<Integer>> possibleAnswerList = new ArrayList<>();
+        int requestId = 0;
 
         while (opList.size() != 0) {
-            for (Tuple<CalculatorServerInterface, Integer> calculatorServer : calculatorServerList) {
+            for(int i = 0; i < calculatorServerList.size(); i++) {
+
                 //Get sub task list and remove it from  the full task list
-                int requestSize = Math.min(opList.size(), getOptimalTaskSize(calculatorServer.y));
+                int requestSize = Math.min(opList.size(), getOptimalTaskSize(calculatorServerList.get(i).y));
                 System.out.println("Request of size " + requestSize);
 
                 //If opList is complete stop trying to send requests
                 if (requestSize == 0)
                     break;
 
-
                 ArrayList<Tuple<String, Integer>> subTaskList = new ArrayList<>(opList.subList(0, requestSize));
                 opList.subList(0, requestSize).clear();
 
                 //Submit all tasks through the Executor Completion service, creating new threads
-                CallableCalculatorServer calculatorServerCall = new CallableCalculatorServer(calculatorServer.x, subTaskList);
+                CallableCalculatorServer calculatorServerCall1 = new CallableCalculatorServer(calculatorServerList.get(i).x, subTaskList);
+                CallableCalculatorServer calculatorServerCall2;
 
+                if (i == calculatorServerList.size() - 1) {
+                    calculatorServerCall2 = new CallableCalculatorServer(calculatorServerList.get(0).x, subTaskList);
+                } else {
+                    calculatorServerCall2 = new CallableCalculatorServer(calculatorServerList.get(i + 1).x, subTaskList);
+                }
 
-
-                //TODO: Create second callable and call both with same subtask
-                callableList.add(calculatorServerCall);
-                futureList.add(ecs.submit(calculatorServerCall));
+                asyncResponseList.add(new UnsecuredRequest(calculatorServerCall1, executor.submit(calculatorServerCall1), requestId));
+                asyncResponseList.add(new UnsecuredRequest(calculatorServerCall2, executor.submit(calculatorServerCall2), requestId));
+                requestId++;
             }
         }
 
         try {
-            while (callableList.size() != 0) {
-                for (int i = 0; i < callableList.size(); i++) {
-                    Integer result = ecs.take().get();
-                    if (result != null && result != -1) {
-                        taskTotal = (taskTotal + result) % 5000;
-                        callableList.remove(i);
-                        break;
-                    } else {
-                        ecs.submit(callableList.get(i));
-                    }
-                }
+            while (asyncResponseList.size() != 0) {
+                for (int i = 0; i < asyncResponseList.size(); i++) {
+                    Integer result = asyncResponseList.get(i).response.get();
 
+                    if (result != null && result != -1) {
+                        System.out.println("Got correct response");
+                        boolean isNotPresent = possibleAnswerList.get(asyncResponseList.get(i).requestId).add(result);
+                        if (!isNotPresent) {
+                            removeRequestsWidhtId(asyncResponseList, asyncResponseList.get(i).requestId);
+                            taskTotal = (taskTotal + result) % 5000;
+                            break;
+                        }
+                    }
+                    System.out.println("Got incorrect response, resending");
+                    asyncResponseList.add(new UnsecuredRequest(asyncResponseList.get(i).callableCalculatorServer, executor.submit(asyncResponseList.get(i).callableCalculatorServer), asyncResponseList.get(i).requestId));
+                    asyncResponseList.remove(i);
+                }
             }
         } catch (Exception e){
             System.out.println(e);
         }
 
         return taskTotal;
+    }
+
+    private void removeRequestsWidhtId(List<UnsecuredRequest> unsecuredRequestList, int requestId) {
+        unsecuredRequestList.removeIf(request -> request.requestId == requestId);
     }
 
     private ArrayList<Tuple<String, Integer>> readOperationList() {
