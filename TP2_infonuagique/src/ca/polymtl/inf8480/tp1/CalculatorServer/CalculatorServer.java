@@ -13,15 +13,27 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-public class CalculatorServer implements CalculatorServerInterface {
+import java.util.Random;
+import java.util.concurrent.Callable;
+
+public class CalculatorServer implements CalculatorServerInterface  {
 
     private int serverCapacity; //QI in PDF for lab
     private int maliciousPercentage; //m in PDF
     private String nameServerHostname;
     private NameServiceInterface nameServiceStub;
+    private List<Tuple<String, Integer>> operationList;
+    private String username;
+    private String password;
 
+    public  Integer call() {
+        try {
+            return calculateTaskList();
+        }catch (Exception e){
+            return  -1;
+        }
+    }
     public static void main(String[] args) {
         if (args.length > 2) {
             CalculatorServer server = new CalculatorServer(Integer.parseInt(args[0]), //Server capacity
@@ -110,6 +122,37 @@ public class CalculatorServer implements CalculatorServerInterface {
     }
 
     @Override
+    public Integer calculateTaskList() throws RemoteException {
+        if (!confirmResourcesAvailable(operationList.size()) || confirmDispatcherLogin(username, password)) {
+            return -1;
+        }
+
+        int total = 0;
+
+        for (Tuple<String, Integer> operation : operationList) {
+            if (operation.getKey().equals("pell")) {
+                total += Operations.pell(operation.getValue()) % 5000;
+                total = total % 5000;
+            } else if (operation.getKey().equals("prime")) {
+                total += Operations.prime(operation.getValue()) % 5000;
+                total = total % 5000;
+            } else {
+                System.out.println("Error wrong operation type used");
+                break;
+            }
+        }
+
+        Random rdm = new Random();
+        if (rdm.nextInt(100 + 1) >= maliciousPercentage) {
+            return total; //Returns right answer
+        } else {
+            return rdm.nextInt(total);  //Returns malicious answer,
+            //random between 0 and correct answer for simulation purposes
+        }
+    }
+
+
+    @Override
     public int getCalculatorCapacity() {
         return serverCapacity;
     }
@@ -157,5 +200,12 @@ public class CalculatorServer implements CalculatorServerInterface {
         }
 
         return stub;
+    }
+
+    @Override
+    public void setTaskList(List<Tuple<String, Integer>> opList, String uname, String pword){
+        operationList = opList;
+        username = uname;
+        password = pword;
     }
 }

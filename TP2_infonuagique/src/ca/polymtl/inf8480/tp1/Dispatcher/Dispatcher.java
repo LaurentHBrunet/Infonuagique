@@ -1,5 +1,6 @@
 package ca.polymtl.inf8480.tp1.Dispatcher;
 
+import ca.polymtl.inf8480.tp1.CalculatorServer.CalculatorServer;
 import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
 import ca.polymtl.inf8480.tp1.shared.Tuple;
@@ -16,6 +17,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class Dispatcher {
 
@@ -25,7 +27,6 @@ public class Dispatcher {
     private NameServiceInterface nameServiceInterfaceStub;
     private String username;
     private String password;
-
     public static void main(String[] args) {
 
         if (args.length > 3) {
@@ -51,6 +52,7 @@ public class Dispatcher {
         this.isSecured = isSecured;
         this.username = username;
         this.password = password;
+        this.nameServerAddress = nameServerAddress;
 
         nameServiceInterfaceStub = loadNameServiceStub(nameServerAddress);
     }
@@ -59,27 +61,51 @@ public class Dispatcher {
         //Get op list from file
         List<Tuple<String, Integer>> opList = readOperationList();
 
+
         //Get list of calculator servers from the NameService server
         List<Tuple<String, Integer>> calculatorServersInfo; //String is serverAddress, Integer is server capacity
         try {
             calculatorServersInfo = nameServiceInterfaceStub.getCalculatorServerList(username, password);
+            //stubList
+            List<Tuple<CalculatorServerInterface, Tuple<String, Integer>>> calculatorServerStubs = new ArrayList<>();
 
             //TODO: Generate CalculatorServerInteface stubs for each calculator server info
             //TODO: Put it in hashmap, or list of pairs or whatever to have capacity accessible
+            for (Tuple<String, Integer> calculatorServer : calculatorServersInfo) {
+                calculatorServerStubs.add(new Tuple<>(loadCalculatorServerStub("THIS IS A PLACEHOLDER"), calculatorServer)); //todo find hostname!
+            }
 
+            Executor executor = Executors.newCachedThreadPool();
+            ExecutorCompletionService<Integer> executorCompletionService = new ExecutorCompletionService<>(executor);
             if (isSecured) {
+
+
+
+                calculatorServerStubs.get(0).x.setTaskList(opList, username,password ); // todo modify to dispatch tasks, this is a test
+
+                Future<Integer> calculationResult = executorCompletionService.submit(calculatorServerStubs.get(0).x);
+                if (calculationResult.isDone()){
+                    System.out.println(calculationResult);
+                }
+
+
                 //TODO: Dispatch parts of op list to different calculator servers
                 // don't need to confirm return value with other server.
             } else {
                 //TODO: Dispatch parts of op list to different calculator servers
                 // Need to confirm return value with other server.
             }
+
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
         //TODO: Consolidate all tasks and print final answer
     }
+    /*private void dispatchToSecured(){
+
+    }*/
 
     private List<Tuple<String, Integer>> readOperationList() {
         //Split calculation file in operation lines
@@ -164,4 +190,5 @@ public class Dispatcher {
 
         return stub;
     }
+
 }
