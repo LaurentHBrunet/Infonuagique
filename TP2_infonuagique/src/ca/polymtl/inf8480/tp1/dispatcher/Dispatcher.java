@@ -79,7 +79,7 @@ public class Dispatcher {
                 // don't need to confirm return value with other server.
 
             } else {
-                result = dispatchUnsecured();
+                result = dispatchUnsecured(opList);
                 //TODO: Dispatch parts of op list to different calculator servers
                 // Need to confirm return value with other server.
             }
@@ -93,9 +93,8 @@ public class Dispatcher {
 
     private int dispatchSecured(ArrayList<Tuple<String, Integer>> opList) {
         int taskTotal = 0;
-        Executor executor = Executors.newCachedThreadPool();
-        ExecutorCompletionService<Integer> ecs = new ExecutorCompletionService<>(executor);
-        List<Callable<Integer>> callableList = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<Tuple<Future<Integer>, CallableCalculatorServer>> asyncResponseList = new ArrayList<>();
 
         while (opList.size() != 0) {
             for (Tuple<CalculatorServerInterface, Integer> calculatorServer : calculatorServerList) {
@@ -112,8 +111,66 @@ public class Dispatcher {
 
                 //Submit all tasks through the Executor Completion service, creating new threads
                 CallableCalculatorServer calculatorServerCall = new CallableCalculatorServer(calculatorServer.x, subTaskList);
+                asyncResponseList.add(new Tuple<>(executor.submit(calculatorServerCall), calculatorServerCall));
+            }
+        }
+
+        try {
+            while (asyncResponseList.size() != 0) {
+                for (int i = 0; i < asyncResponseList.size(); i++) {
+                    Integer result = asyncResponseList.get(i).x.get();
+
+                    if (result != null && result != -1) {
+                        System.out.println("Got correct response");
+                        taskTotal = (taskTotal + result) % 5000;
+                        asyncResponseList.remove(i);
+                        break;
+                    } else {
+                        System.out.println("Got incorrect response, resending");
+                        asyncResponseList.add(new Tuple<>(executor.submit(asyncResponseList.get(i).y), asyncResponseList.get(i).y));
+                        asyncResponseList.remove(i);
+                    }
+                }
+            }
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
+        return taskTotal;
+    }
+
+
+
+    private int dispatchUnsecured(ArrayList<Tuple<String, Integer>> opList) {
+        int taskTotal = 0;
+        Executor executor = Executors.newCachedThreadPool();
+        ExecutorCompletionService<Integer> ecs = new ExecutorCompletionService<>(executor);
+
+        List<Callable<Integer>> callableList = new ArrayList<>();
+        List<Future<Integer>> futureList = new ArrayList<>();
+
+        while (opList.size() != 0) {
+            for (Tuple<CalculatorServerInterface, Integer> calculatorServer : calculatorServerList) {
+                //Get sub task list and remove it from  the full task list
+                int requestSize = Math.min(opList.size(), getOptimalTaskSize(calculatorServer.y));
+                System.out.println("Request of size " + requestSize);
+
+                //If opList is complete stop trying to send requests
+                if (requestSize == 0)
+                    break;
+
+
+                ArrayList<Tuple<String, Integer>> subTaskList = new ArrayList<>(opList.subList(0, requestSize));
+                opList.subList(0, requestSize).clear();
+
+                //Submit all tasks through the Executor Completion service, creating new threads
+                CallableCalculatorServer calculatorServerCall = new CallableCalculatorServer(calculatorServer.x, subTaskList);
+
+
+
+                //TODO: Create second callable and call both with same subtask
                 callableList.add(calculatorServerCall);
-                ecs.submit(calculatorServerCall);
+                futureList.add(ecs.submit(calculatorServerCall));
             }
         }
 
@@ -136,10 +193,6 @@ public class Dispatcher {
         }
 
         return taskTotal;
-    }
-
-    private int dispatchUnsecured() {
-        return -1;
     }
 
     private ArrayList<Tuple<String, Integer>> readOperationList() {
@@ -231,7 +284,7 @@ public class Dispatcher {
 
     //Triple server capacity which should give roughly 60% success rate
     private int getOptimalTaskSize(int serverCapacity) {
-        return serverCapacity * 5;
+        return serverCapacity * 3;
     }
 
     private class CallableCalculatorServer implements Callable<Integer> {

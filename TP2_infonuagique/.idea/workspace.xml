@@ -2,26 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/calculatorServer.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dispatcher.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nameService.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/Operations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/Operations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/nameService/NameService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java" afterDir="false" />
     </list>
-    <list id="0c59fc5d-999a-47b8-8cf3-176485601eda" name="Added tuple" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/Tuple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/CalculatorServer/CalculatorServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/Dispatcher/Dispatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/NameService/NameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/nameService/NameService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/FileData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/NameServiceInterface.java" afterDir="false" />
-    </list>
+    <list id="0c59fc5d-999a-47b8-8cf3-176485601eda" name="Added tuple" comment="" />
     <ignored path="$PROJECT_DIR$/bin/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +17,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="454">
+            <state relative-caret-position="183">
               <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -61,15 +44,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="48">
-              <caret line="186" lean-forward="true" selection-start-line="186" selection-end-line="186" />
+            <state relative-caret-position="830">
+              <caret line="128" column="79" selection-start-line="128" selection-start-column="79" selection-end-line="128" selection-end-column="79" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5675#5676#0" expanded="true" />
-                <element signature="e#9212#9213#0" expanded="true" />
+                <element signature="e#11587#11588#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -98,11 +80,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/calculatorServer.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
+            <state relative-caret-position="300">
+              <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
             </state>
           </provider>
         </entry>
@@ -167,78 +149,11 @@
         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/nameService/NameService.java" />
         <option value="$PROJECT_DIR$/dispatcher.sh" />
         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java" />
-        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java" />
         <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java" />
         <option value="$PROJECT_DIR$/calculatorServer.sh" />
+        <option value="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java" />
       </list>
     </option>
-  </component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java">
-      <ranges>
-        <range start1="0" end1="1" start2="0" end2="1" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="4" end1="6" start2="4" end2="7" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="27" end1="27" start2="28" end2="29" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="29" end1="29" start2="31" end2="32" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="58" end1="60" start2="61" end2="64" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="61" end1="63" start2="65" end2="67" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="64" end1="64" start2="68" end2="69" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="65" end1="68" start2="70" end2="74" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="70" end1="70" start2="76" end2="77" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="72" end1="72" start2="79" end2="80" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="73" end1="73" start2="81" end2="82" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="81" end1="81" start2="90" end2="91" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="82" end1="82" start2="92" end2="143" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="83" end1="84" start2="144" end2="145" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="87" end1="88" start2="148" end2="149" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="93" end1="95" start2="154" end2="154" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="96" end1="97" start2="155" end2="156" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="128" end1="128" start2="187" end2="188" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="150" end1="150" start2="210" end2="212" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="162" end1="162" start2="224" end2="226" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="166" end1="166" start2="230" end2="259" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="167" end1="167" start2="260" end2="262" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-      </ranges>
-    </file>
-    <file path="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java">
-      <ranges>
-        <range start1="0" end1="1" start2="0" end2="1" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="4" end1="5" start2="4" end2="5" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="6" end1="6" start2="6" end2="7" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="13" end1="13" start2="14" end2="15" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="24" end1="28" start2="26" end2="31" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="30" end1="31" start2="33" end2="34" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="44" end1="47" start2="47" end2="47" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="49" end1="51" start2="49" end2="52" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="81" end1="82" start2="82" end2="85" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="83" end1="83" start2="86" end2="87" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="85" end1="85" start2="89" end2="91" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="88" end1="91" start2="94" end2="97" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="92" end1="94" start2="98" end2="100" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="103" end1="103" start2="109" end2="110" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="105" end1="105" start2="112" end2="113" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="109" end1="114" start2="117" end2="117" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="118" end1="118" start2="121" end2="122" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="120" end1="121" start2="124" end2="127" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-      </ranges>
-    </file>
-    <file path="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java">
-      <ranges>
-        <range start1="2" end1="3" start2="2" end2="2" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="6" end1="6" start2="5" end2="6" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="9" end1="11" start2="9" end2="10" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-      </ranges>
-    </file>
-    <file path="$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/nameService/NameService.java">
-      <ranges>
-        <range start1="0" end1="1" start2="0" end2="1" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="2" end1="3" start2="2" end2="2" changelist="aed5db81-cdc3-49d8-affd-6e8e551dbcb1" />
-        <range start1="4" end1="5" start2="3" end2="4" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="18" end1="19" start2="17" end2="18" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="50" end1="51" start2="49" end2="50" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-        <range start1="67" end1="68" start2="66" end2="68" changelist="0c59fc5d-999a-47b8-8cf3-176485601eda" />
-      </ranges>
-    </file>
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
@@ -320,7 +235,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552854201596" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552857961882" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
@@ -538,18 +453,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="186" lean-forward="true" selection-start-line="186" selection-end-line="186" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5675#5676#0" expanded="true" />
-            <element signature="e#9212#9213#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/shared/CalculatorServerInterface.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -561,16 +464,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="11" column="31" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="454">
-          <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -606,8 +499,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/calculatorServer.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="300">
+          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/calculatorServer/CalculatorServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ca/polymtl/inf8480/tp1/dispatcher/Dispatcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="830">
+          <caret line="128" column="79" selection-start-line="128" selection-start-column="79" selection-end-line="128" selection-end-column="79" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#11587#11588#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
