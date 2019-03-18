@@ -63,9 +63,9 @@ public class CalculatorServer implements CalculatorServerInterface {
 
         try {
             CalculatorServerInterface stub = (CalculatorServerInterface) UnicastRemoteObject
-                    .exportObject(this, 0);
+                    .exportObject(this, 5001);
 
-            Registry registry = LocateRegistry.getRegistry();
+            Registry registry = LocateRegistry.getRegistry(5030);
             registry.rebind("calculatorServer", stub);
 
             System.out.println("Server ready.");
@@ -149,7 +149,8 @@ public class CalculatorServer implements CalculatorServerInterface {
         NameServiceInterface stub = null;
 
         try {
-            Registry registry = LocateRegistry.getRegistry(hostname);
+            System.out.println("5030");
+            Registry registry = LocateRegistry.getRegistry(hostname, 5030);
             stub = (NameServiceInterface) registry.lookup("nameServer");
         } catch (NotBoundException e) {
             System.out.println("Erreur: Le nom '" + e.getMessage()

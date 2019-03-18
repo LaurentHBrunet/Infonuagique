@@ -4,8 +4,7 @@ import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
 import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
 import ca.polymtl.inf8480.tp1.shared.Tuple;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 import java.io.BufferedReader;
@@ -17,8 +16,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Dispatcher {
 
@@ -76,21 +73,32 @@ public class Dispatcher {
             }
 
             if (isSecured) {
-                result = dispatchSecured(opList);
-                //TODO: Dispatch parts of op list to different calculator servers
-                // don't need to confirm return value with other server.
+                long start = System.nanoTime();
 
+                result = dispatchSecured(opList);
+
+                long end = System.nanoTime();
+
+
+                System.out.println("Temps écoulé appel secure: " + (end - start)
+                        + " ns");
+                System.out.println("Résultat appel secure: " + result);
             } else {
+                long start = System.nanoTime();
+
                 result = dispatchUnsecured(opList);
-                //TODO: Dispatch parts of op list to different calculator servers
-                // Need to confirm return value with other server.
+
+                long end = System.nanoTime();
+
+                System.out.println("Temps écoulé appel non secure: " + (end - start)
+                        + " ns");
+                System.out.println("Résultat appel secure: " + result);
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
         //TODO: Consolidate all tasks and print final answer
-        System.out.println(result);
     }
 
     private int dispatchSecured(ArrayList<Tuple<String, Integer>> opList) {
@@ -187,6 +195,7 @@ public class Dispatcher {
 
                 asyncResponseList.add(new UnsecuredRequest(calculatorServerCall1, executor.submit(calculatorServerCall1), requestId));
                 asyncResponseList.add(new UnsecuredRequest(calculatorServerCall2, executor.submit(calculatorServerCall2), requestId));
+                possibleAnswerList.add(new HashSet<>());
                 requestId++;
             }
         }
@@ -266,7 +275,7 @@ public class Dispatcher {
 
         System.out.println("Loading name service stub at address " + hostname);
         try {
-            Registry registry = LocateRegistry.getRegistry(hostname);
+            Registry registry = LocateRegistry.getRegistry(hostname, 5030);
             stub = (NameServiceInterface) registry.lookup("nameServer");
         } catch (NotBoundException e) {
             System.out.println("Erreur: Le nom '" + e.getMessage()
@@ -289,7 +298,7 @@ public class Dispatcher {
         try {
             System.out.println("Creating calculator server stub for " + hostname);
 
-            Registry registry = LocateRegistry.getRegistry(hostname);
+            Registry registry = LocateRegistry.getRegistry(hostname, 5030);
             stub = (CalculatorServerInterface) registry.lookup("calculatorServer");
         } catch (NotBoundException e) {
             System.out.println("Erreur: Le nom '" + e.getMessage()
