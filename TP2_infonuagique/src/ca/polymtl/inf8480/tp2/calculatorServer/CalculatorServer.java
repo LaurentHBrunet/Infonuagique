@@ -1,10 +1,9 @@
-package ca.polymtl.inf8480.tp1.calculatorServer;
+package ca.polymtl.inf8480.tp2.calculatorServer;
 
-import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
-import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import ca.polymtl.inf8480.tp1.shared.Tuple;
+import ca.polymtl.inf8480.tp2.shared.CalculatorServerInterface;
+import ca.polymtl.inf8480.tp2.shared.NameServiceInterface;
+import ca.polymtl.inf8480.tp2.shared.Tuple;
 
-import java.net.Inet4Address;
 import java.rmi.AccessException;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
@@ -13,7 +12,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class CalculatorServer implements CalculatorServerInterface {

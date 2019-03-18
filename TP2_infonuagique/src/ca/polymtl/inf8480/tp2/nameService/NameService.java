@@ -1,7 +1,7 @@
-package ca.polymtl.inf8480.tp1.nameService;
+package ca.polymtl.inf8480.tp2.nameService;
 
-import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import ca.polymtl.inf8480.tp1.shared.Tuple;
+import ca.polymtl.inf8480.tp2.shared.NameServiceInterface;
+import ca.polymtl.inf8480.tp2.shared.Tuple;
 
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;

@@ -1,8 +1,8 @@
-package ca.polymtl.inf8480.tp1.dispatcher;
+package ca.polymtl.inf8480.tp2.dispatcher;
 
-import ca.polymtl.inf8480.tp1.shared.CalculatorServerInterface;
-import ca.polymtl.inf8480.tp1.shared.NameServiceInterface;
-import ca.polymtl.inf8480.tp1.shared.Tuple;
+import ca.polymtl.inf8480.tp2.shared.CalculatorServerInterface;
+import ca.polymtl.inf8480.tp2.shared.NameServiceInterface;
+import ca.polymtl.inf8480.tp2.shared.Tuple;
 
 import java.util.*;
 import java.util.concurrent.*;

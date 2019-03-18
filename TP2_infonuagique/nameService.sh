@@ -6,7 +6,7 @@ popd > /dev/null
 
 cat << EndOfMessage
 HELP: 
-./server.sh ip_address
+./nameService.sh ip_address
 	- ip_address: (OPTIONAL) L'addresse ip du serveur.
 	  Si l'arguement est non fourni, on conisdère que le serveur est local (ip_address = 127.0.0.1)
 
@@ -22,4 +22,4 @@ java -cp "$basepath"/nameService.jar:"$basepath"/shared.jar \
   -Djava.rmi.server.codebase=file:"$basepath"/shared.jar \
   -Djava.security.policy="$basepath"/policy \
   -Djava.rmi.server.hostname="$IPADDR" \
-  ca.polymtl.inf8480.tp1.nameService.NameService
+  ca.polymtl.inf8480.tp2.nameService.NameService

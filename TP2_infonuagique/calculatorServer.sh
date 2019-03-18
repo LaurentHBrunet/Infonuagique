@@ -6,8 +6,11 @@ popd > /dev/null
 
 cat << EndOfMessage
 HELP: 
-./server.sh ip_address
-	- ip_address: (OPTIONAL) L'addresse ip du serveur.
+./calculatorServer.sh ip_address capacity maliciousPercentage nameServerAddress
+	- ip_address:  L'addresse ip du serveur.
+	- capacity: la capacité du serveur de calcul.
+	- maliciousPercentage: le % de chance que le serveur retourne une réponse malicieuse
+	- nameServerAddress: l'adresse ip du nameService
 
 EndOfMessage
 
@@ -17,4 +20,4 @@ java -cp "$basepath"/calculatorServer.jar:"$basepath"/shared.jar \
   -Djava.rmi.server.codebase=file:"$basepath"/shared.jar \
   -Djava.security.policy="$basepath"/policy \
   -Djava.rmi.server.hostname="$IPADDR" \
-  ca.polymtl.inf8480.tp1.calculatorServer.CalculatorServer $*
+  ca.polymtl.inf8480.tp2.calculatorServer.CalculatorServer $*
