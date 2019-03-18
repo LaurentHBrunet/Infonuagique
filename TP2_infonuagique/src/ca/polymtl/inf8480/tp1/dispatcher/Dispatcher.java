@@ -16,7 +16,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-
+//répartiteur
 public class Dispatcher {
 
     private String calculationFilePath;
@@ -27,8 +27,11 @@ public class Dispatcher {
     private String password;
     private List<Tuple<CalculatorServerInterface, Integer>> calculatorServerList = new ArrayList<>();
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
-
 
         if (args.length > 3) {
             String calculationFilePath = args[0];
@@ -48,6 +51,14 @@ public class Dispatcher {
         }
     }
 
+    /**
+     *
+     * @param calculationFilePath
+     * @param nameServerAddress
+     * @param username
+     * @param password
+     * @param isSecured
+     */
     public Dispatcher(String calculationFilePath, String nameServerAddress, String username, String password, boolean isSecured) {
         this.calculationFilePath = calculationFilePath;
         this.isSecured = isSecured;
@@ -57,6 +68,9 @@ public class Dispatcher {
         nameServiceInterfaceStub = loadNameServiceStub(nameServerAddress);
     }
 
+    /**
+     *
+     */
     private void run() {
         //Get op list from file0
         int result = -1;
@@ -101,6 +115,11 @@ public class Dispatcher {
         //TODO: Consolidate all tasks and print final answer
     }
 
+    /**
+     *
+     * @param opList
+     * @return
+     */
     private int dispatchSecured(ArrayList<Tuple<String, Integer>> opList) {
         int taskTotal = 0;
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -149,6 +168,9 @@ public class Dispatcher {
         return taskTotal;
     }
 
+    /**
+     *
+     */
     private class UnsecuredRequest {
         protected CallableCalculatorServer callableCalculatorServer;
         protected Future<Integer> response;
@@ -161,7 +183,11 @@ public class Dispatcher {
         }
     }
 
-
+    /**
+     *
+     * @param opList
+     * @return
+     */
     private int dispatchUnsecured(ArrayList<Tuple<String, Integer>> opList) {
         int taskTotal = 0;
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -226,10 +252,19 @@ public class Dispatcher {
         return taskTotal;
     }
 
+    /**
+     *
+     * @param unsecuredRequestList
+     * @param requestId
+     */
     private void removeRequestsWidhtId(List<UnsecuredRequest> unsecuredRequestList, int requestId) {
         unsecuredRequestList.removeIf(request -> request.requestId == requestId);
     }
 
+    /**
+     *
+     * @return
+     */
     private ArrayList<Tuple<String, Integer>> readOperationList() {
         //Split calculation file in operation lines
         ArrayList<String> operationLines = readCalculationFileLines(new File(calculationFilePath));
@@ -247,6 +282,11 @@ public class Dispatcher {
         return opList;
     }
 
+    /**
+     *
+     * @param calculationFile
+     * @return
+     */
     private ArrayList<String> readCalculationFileLines(File calculationFile) {
 
         String line;
@@ -270,6 +310,11 @@ public class Dispatcher {
         return fileLines;
     }
 
+    /**
+     *
+     * @param hostname
+     * @return
+     */
     private NameServiceInterface loadNameServiceStub(String hostname) {
         NameServiceInterface stub = null;
 
@@ -292,6 +337,11 @@ public class Dispatcher {
         return stub;
     }
 
+    /**
+     *
+     * @param hostname
+     * @return
+     */
     private CalculatorServerInterface loadCalculatorServerStub(String hostname) {
         CalculatorServerInterface stub = null;
 
@@ -317,21 +367,40 @@ public class Dispatcher {
         return stub;
     }
 
+    /**
+     *
+     * @param serverCapacity
+     * @return
+     */
     //Triple server capacity which should give roughly 60% success rate
     private int getOptimalTaskSize(int serverCapacity) {
         return serverCapacity * 3;
     }
 
+    /**
+     *Classe interne Callable utilisée par un executor service pour threader les appels aux serveurs de calculs
+     *
+     */
     private class CallableCalculatorServer implements Callable<Integer> {
 
         private CalculatorServerInterface stub;
         private ArrayList<Tuple<String, Integer>> taskList;
 
+        /**
+         * Constucteur
+         * @param calculatorServerInterface stub du serveur de calcul auquel on envoit l'appel
+         * @param taskList liste de tuple d'opération - opérande représentant les calculs à effectuer
+         */
         CallableCalculatorServer(CalculatorServerInterface calculatorServerInterface, ArrayList<Tuple<String, Integer>> taskList) {
             this.stub = calculatorServerInterface;
             this.taskList = taskList;
         }
 
+        /**
+         * Appelle le calcul des équations via le stub du calculator serveur
+         * @return valeur de retour du calcul (malicieux ou non) ou -1 en cas de refus de calcul
+         * @throws Exception
+         */
         @Override
         public Integer call() throws Exception {
             int result = 0;

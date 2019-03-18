@@ -24,8 +24,13 @@ public class CalculatorServer implements CalculatorServerInterface {
     private NameServiceInterface nameServiceStub;
     private String hostname;
 
+    /**
+     * Entry point
+     * @param args [1] int capacité du serveur
+     *        args [2] int pourcentage de chance que le serveur retourne une réponce erronée
+     *        args [3] String adresse du nameService
+     */
     public static void main(String[] args) {
-
         if (args.length > 3) {
             CalculatorServer server = new CalculatorServer(args[0],
                                                            Integer.parseInt(args[1]), //Server capacity
@@ -38,6 +43,15 @@ public class CalculatorServer implements CalculatorServerInterface {
         }
     }
 
+    /**
+     * Constructeur pour le CalculatorServer.
+     * associe les variables passés en paramètre
+     * load un stub du nameServer
+     * ajoute le calculator au nameServer pour que celui-ci connaisse ses variables
+     * @param serverCapacity
+     * @param maliciousPercentage
+     * @param nameServerHostName
+     */
     public CalculatorServer(String hostname, int serverCapacity, int maliciousPercentage, String nameServerHostName) {
         super();
 
@@ -49,13 +63,15 @@ public class CalculatorServer implements CalculatorServerInterface {
         nameServiceStub = loadNameServiceStub(nameServerHostName);
 
         try {
-            //TODO: get current IP address
             nameServiceStub.addCalculatorToNameServer(hostname, serverCapacity);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * attache un stub du calculatorServer au registe
+     */
     private void run() {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
@@ -80,6 +96,15 @@ public class CalculatorServer implements CalculatorServerInterface {
         }
     }
 
+    /**
+     * Calcule re résultat d'une série d'opération et retourne la somme des résultats de ces opérations ou un chiffre
+     * alléatoire si le serveur de calcul est malicieux
+     * @param operationList liste d'opérations sous format Tuple (opération,opérande)
+     * @param username nom d'utilisateur associé au répartiteur pour authentification
+     * @param password mot de passe associé au répartiteur pour authentification
+     * @return total des résultat d'opération %5000 si bonne valeur, nombre random si malicieux ou -1 pour erreur
+     * @throws RemoteException
+     */
     // Returns -1 if the server is unable to do the task because of lack of resources.
     @Override
     public int calculateTaskList(ArrayList<Tuple<String, Integer>> operationList, String username, String password) throws RemoteException {
@@ -118,6 +143,12 @@ public class CalculatorServer implements CalculatorServerInterface {
         }
     }
 
+    /**
+     * Vérifie que le serveur de calcul possede assez de ressources pour effectuer les opérations demandées.
+     * @param taskSize nombre d'opérations à effectuer
+     * @return true si le calcul peut être effectué
+     *  false sinon
+     */
     private boolean confirmResourcesAvailable(int taskSize) {
         // Chances T of resources not being available
         float t = ((taskSize - serverCapacity) / (5.0f * serverCapacity)) * 100;
@@ -133,6 +164,12 @@ public class CalculatorServer implements CalculatorServerInterface {
         }
     }
 
+    /**
+     * Vérifie l'authentification des appels avec le NameService
+     * @param username
+     * @param password
+     * @return
+     */
     private boolean confirmDispatcherLogin(String username, String password) {
         try {
             return nameServiceStub.authenticateUser(username, password);
@@ -144,7 +181,11 @@ public class CalculatorServer implements CalculatorServerInterface {
         return false;
     }
 
-
+    /**
+     * recherche le nameServer dans le registre
+     * @param hostname addresse du nameServer
+     * @return stub du nameServer
+     */
     private NameServiceInterface loadNameServiceStub(String hostname) {
         NameServiceInterface stub = null;
 

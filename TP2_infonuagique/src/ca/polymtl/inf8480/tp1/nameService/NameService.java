@@ -22,6 +22,9 @@ public class NameService implements NameServiceInterface {
         nameService.run();
     }
 
+    /**
+     * Se connecte au registre RMI et y attache un stub du nameServer
+     */
     private void run() {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
@@ -46,6 +49,17 @@ public class NameService implements NameServiceInterface {
         }
     }
 
+    /**
+     * Permet d'obtenir la liste des serveurs de calculs disponibles. Utilisé ar le dispatcher.
+     * Cette liste doit avoir étée remplie par l'appel de addCalculatorToNameServer par les calculatorServers
+     * avant l'appel de cette fonction
+     * enregistre le username et password associés au répartiteur
+     * @param username nom d'utilisatuer associé au répartiteur qui fait l'appel
+     * @param password mot de passe associé au répartiteur qui fait l'appel
+     * @return Liste de Tuple de (addresse de serveur de calcul, capacité de serveur de calcul) représentant tous les
+     * serveurs de calculs enregistrés
+     * @throws RemoteException
+     */
     @Override
     public List<Tuple<String, Integer>> getCalculatorServerList(String username, String password) throws RemoteException {
         dispatcherUsername = username;
@@ -53,6 +67,13 @@ public class NameService implements NameServiceInterface {
         return calculatorServerList;
     }
 
+    /**
+     * vérifie l'authentification des appelants
+     * @param userName nom d'utilisateur du server de calcul fesant l'appel
+     * @param password mot de passe du server de calcul fesant l'appel
+     * @return true si le mot de passe et le nom d'utilisateurs sont bons
+     * @throws RemoteException
+     */
     @Override
     public boolean authenticateUser(String userName, String password) throws RemoteException {
         if (dispatcherUsername == userName && dispatcherPassword == password) {
@@ -62,6 +83,13 @@ public class NameService implements NameServiceInterface {
         }
     }
 
+    /**
+     * ajoute l'adresse et la capacité du serveur de calculs appelant dans la liste calculatorServerList
+     * @param serverAddress adresse du serveur de calcul
+     * @param serverCapacity capacité du serveur de calcul
+     * @return true si les informations ont pu etre ajoutées à la liste
+     * @throws RemoteException
+     */
     @Override
     public boolean addCalculatorToNameServer(String serverAddress, Integer serverCapacity) throws RemoteException {
         System.out.println("Adding server " + serverAddress + " to name server, Capacity : " + serverCapacity);
